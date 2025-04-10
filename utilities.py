@@ -63,7 +63,7 @@ def extract_label_from_window(seg, majority_frac=0.5):
     window_labels_unique = window_labels.unique()
     win_label = None  # treat as ambiguous if completely unlabeled or multiple different activities
     if len(window_labels_unique) == 1 and len(window_labels) / len(seg) >= majority_frac:
-        # All labelled points in this window have the same label
+        # All labeled points in this window have the same label
         win_label = window_labels_unique[0]
     return win_label
 
@@ -181,10 +181,10 @@ def augment_window(window, skip_aug=None):
 
 def augment_df(df, acc, skip_aug=None):
     # Augment Training Data
-    print("\nPerforming data augmentation on labelled train windows...")
+    print("\nPerforming data augmentation on labeled train windows...")
     augmented_features = []
 
-    # Only augment labelled data
+    # Only augment labeled data
     for idx, row in df[df['label'].notna()].iterrows():
         # Retrieve original window from `acc` using matching index
         window = np.array(acc[idx])  # shape (window_size, 3)
@@ -213,7 +213,7 @@ def augment_df(df, acc, skip_aug=None):
 def train_classifier(classifier, X_train, y_train, X_test, y_test, conf_threshold, n_estimators=200, n_iter=20):
     print(f"\n-------- Training {classifier.__name__} model --------")
 
-    # Prepare labelled train subset
+    # Prepare labeled train subset
     y_train_labeled = y_train[y_train.notna()]
     label_encoder = {lab: i for i, lab in enumerate(sorted(y_train_labeled.unique()))}
     inverse_label_encoder = {v: k for k, v in label_encoder.items()}
@@ -259,7 +259,7 @@ def train_classifier(classifier, X_train, y_train, X_test, y_test, conf_threshol
         else:
             test_acc_history.append(None)
             f1_wtd_history.append(None)
-            print("No labelled test samples to evaluate.")
+            print("No labeled test samples to evaluate.")
 
         # Pseudo-labeling on high-confidence predictions
         remaining_unlabeled = ~labeled_mask
@@ -276,7 +276,7 @@ def train_classifier(classifier, X_train, y_train, X_test, y_test, conf_threshol
         high_conf_mask = max_conf >= conf_threshold
         if not np.any(high_conf_mask):
             print("No high-confidence predictions this iteration\n"
-                  f"Remaining unlabelled window samples = {remaining_unlabeled.sum()}")
+                  f"Remaining unlabeled window samples = {remaining_unlabeled.sum()}")
             newly_labeled_counts.append(0)
             break
 
@@ -287,7 +287,7 @@ def train_classifier(classifier, X_train, y_train, X_test, y_test, conf_threshol
         labeled_mask.loc[high_conf_indices] = True
         newly_labeled_counts.append(len(high_conf_indices))
 
-        print(f"Labelled {len(high_conf_indices)}/{remaining_unlabeled.sum()} "
+        print(f"Labeled {len(high_conf_indices)}/{remaining_unlabeled.sum()} "
               f"samples using confidence filtering (conf >= {conf_threshold:.2f})")
 
     # Final training
